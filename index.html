@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Pulse</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #111b2e;
+      --panel-2: #16233d;
+      --text: #edf3ff;
+      --muted: #a7b4d0;
+      --green: #34d399;
+      --red: #f87171;
+      --yellow: #fbbf24;
+      --blue: #60a5fa;
+      --border: rgba(255,255,255,0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #0b1220, #0d172b);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      padding: 32px 18px 64px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 3vw, 3rem);
+    }
+
+    .status {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .company {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+
+    .company-name {
+      font-weight: bold;
+      font-size: 1.15rem;
+    }
+
+    .ticker {
+      color: var(--muted);
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .price {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .change {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .up { color: var(--green); }
+    .down { color: var(--red); }
+    .neutral { color: var(--yellow); }
+
+    .news-wrap {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 18px;
+    }
+
+    .news, .alerts {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 1.2rem;
+    }
+
+    .feed {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .feed li {
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+    }
+
+    .headline {
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      margin-right: 8px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .bad-up { background: rgba(52, 211, 153, 0.15); color: var(--green); }
+    .bad-down { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+    .bad-alert { background: rgba(251, 191, 36, 0.15); color: var(--yellow); }
+
+    .alert-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .alert-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+      padding: 12px;
+    }
+
+    .alert-title {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .alert-time {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .pulse {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+      animation: ping 1.7s infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes ping {
+      0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+      70% { box-shadow: 0 0 0 12px rgba(52, 211, 153, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+    }
+
+    @media (max-width: 760px) {
+      .news-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <h1>Market Pulse</h1>
+      <div class="status"><span class="pulse"></span>Aktualizováno před 3 min</div>
+    </div>
+
+    <div class="grid" id="stocks"></div>
+
+    <div class="news-wrap">
+      <section class="news">
+        <h2 class="section-title">Poslední zprávy</h2>
+        <ul class="feed" id="newsFeed"></ul>
+      </section>
+
+      <aside class="alerts">
+        <h2 class="section-title">Výpadky a důležité události</h2>
+        <ul class="alert-list" id="alerts"></ul>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const demoStocks = [
+      { name: "Microsoft", ticker: "MSFT", price: 434.19, change: 1.76, category: "Cloud" },
+      { name: "NVIDIA", ticker: "NVDA", price: 134.72, change: 2.84, category: "AI" },
+      { name: "Apple", ticker: "AAPL", price: 214.61, change: -0.64, category: "Hardware" },
+      { name: "Amazon", ticker: "AMZN", price: 188.23, change: 0.92, category: "E-commerce" },
+      { name: "Tesla", ticker: "TSLA", price: 243.18, change: -1.31, category: "EV" }
+    ];
+
+    const demoNews = [
+      { type: "up", time: "10:42", text: "Microsoft oznamuje další investici do datových center v Evropě." },
+      { type: "alert", time: "09:15", text: "V některých regionech dočasně trvala výpadka cloudu u velké technologické platformy." },
+      { type: "down", time: "08:40", text: "NVIDIA po silném růstu zaznamenala krátkodobý pokles kvůli výprodejům v sektoru." },
+      { type: "up", time: "08:08", text: "Apple potvrzuje rozšíření AI funkcí v nových zařízeních." },
+      { type: "alert", time: "07:55", text: "Analytici sledují vliv odchodu klíčového managementu v oblasti chipů." }
+    ];
+
+    const demoAlerts = [
+      { title: "Výpadek cloudové infrastruktury", time: "Před 14 min" },
+      { title: "Jensen Huang zůstává ve vedení", time: "Před 51 min" },
+      { title: "Analytici upravují cílové ceny", time: "Před 1 h 12 min" }
+    ];
+
+    function createStockCard(stock) {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const directionClass = stock.change >= 0 ? "up" : "down";
+      const sign = stock.change >= 0 ? "+" : "";
+
+      card.innerHTML = `
+        <div class="company">
+          <div>
+            <div class="company-name">${stock.name}</div>
+            <div class="ticker">${stock.ticker}</div>
+          </div>
+          <div class="badge ${stock.change >= 0 ? "bad-up" : "bad-down"}">
+            ${stock.category}
+          </div>
+        </div>
+        <div class="price">$${stock.price.toFixed(2)}</div>
+        <div class="change ${directionClass}">${sign}${stock.change.toFixed(2)}%</div>
+      `;
+
+      return card;
+    }
+
+    function renderStocks() {
+      const stocksEl = document.getElementById("stocks");
+      stocksEl.innerHTML = "";
+      demoStocks.forEach(stock => {
+        stocksEl.appendChild(createStockCard(stock));
+      });
+    }
+
+    function renderNews() {
+      const list = document.getElementById("newsFeed");
+      list.innerHTML = "";
+      demoNews.forEach(item => {
+        const li = document.createElement("li");
+        const badgeClass = item.type === "up" ? "bad-up" : item.type === "down" ? "bad-down" : "bad-alert";
+        const badgeText = item.type === "up" ? "Růst" : item.type === "down" ? "Pokles" : "Alert";
+        li.innerHTML = `
+          <div class="meta">
+            <span class="badge ${badgeClass}">${badgeText}</span>
+            ${item.time}
+          </div>
+          <div class="headline">${item.text}</div>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function renderAlerts() {
+      const list = document.getElementById("alerts");
+      list.innerHTML = "";
+      demoAlerts.forEach(item => {
+        const li = document.createElement("li");
+        li.className = "alert-item";
+        li.innerHTML = `
+          <div class="alert-title">${item.title}</div>
+          <div class="alert-time">${item.time}</div>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function randomizeStocks() {
+      demoStocks.forEach(stock => {
+        const drift = (Math.random() - 0.5) * 4;
+        stock.price = Number((stock.price * (1 + drift / 100)).toFixed(2));
+        stock.change = Number((stock.change + (Math.random() - 0.5) * 2).toFixed(2));
+      });
+      renderStocks();
+    }
+
+    renderStocks();
+    renderNews();
+    renderAlerts();
+
+    setInterval(() => {
+      randomizeStocks();
+    }, 5000);
+  </script>
+</body>
+</html>
